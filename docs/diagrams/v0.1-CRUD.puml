@@ -1,0 +1,69 @@
+@startuml Create New Page v0.1 Basic
+title Create New Page v0.1 Basic
+
+actor Admin as User
+entity Frontend
+entity API
+database "Content Database" as CDB
+
+User -> Frontend++: Create new page
+Frontend -> API++: POST /v1/pages
+API -> CDB++: Create entry
+API <-- CDB--: Entry created
+Frontend <-- API--: ""201 Created""\n""{ pageId: ... }""
+User <-- Frontend: Render success result
+
+@enduml
+
+@startuml Request Specific Page v0.1 Basic
+title Request Specific Page v0.1 Basic
+
+actor User
+entity Frontend
+entity API
+database "Content Database" as CDB
+
+User -> Frontend++: Request specific page\n(identified by ""id"" )
+  Frontend -> API++: ""GET /v1/pages/{id}""
+    API -> CDB++: Fetch entry by ID
+    API <-- CDB--: Return entry data
+  Frontend <-- API--: ""200 OK""\n//with page data//
+User <-- Frontend: Render page
+
+@enduml
+
+
+@startuml Update Specific Page v0.1 Basic
+title Update Specific Page v0.1 Basic
+
+actor Admin as User
+entity Frontend
+entity API
+database "Content Database" as CDB
+
+User -> Frontend++: Update specific page\n(identified by ""id"" )
+  Frontend -> API++: ""PUT /v1/pages/{id}""
+    API -> CDB++: Update entry by ID
+    API <-- CDB--: Return entry data
+  Frontend <-- API--: ""200 OK""\n//with updated timestamp & id//
+User <-- Frontend: Show updated page
+
+@enduml
+
+
+@startuml Delete Specific Page v0.1 Basic
+title Delete Specific Page v0.1 Basic
+
+actor Admin as User
+entity Frontend
+entity API
+database "Content Database" as CDB
+
+User -> Frontend++: Delete specific page\n(identified by ""id"" )
+  Frontend -> API++: ""GET /v1/pages/{id}""
+    API -> CDB++: Fetch entry by ID
+    API <-- CDB--: Return entry data
+  Frontend <-- API--: ""200 OK""\n//with deletion timestamp//
+User <-- Frontend: Show deletion success page
+
+@enduml
