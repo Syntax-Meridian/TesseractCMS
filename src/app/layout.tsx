@@ -1,6 +1,10 @@
 import './globals.css'
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+
+config.autoAddCss = false
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} bg-gray-100 font-sans antialiased w-screen h-screen`}>{children}</body>
     </html>
   )
 }
