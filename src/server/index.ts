@@ -1,8 +1,17 @@
 import express, { Request, Response, Router } from "express";
 import next from "next";
-import { PagesService, PagesServiceContract } from "./domains/pages/pages.service";
-import { AuthServiceContract, DummyAuthService } from "./shared/auth/auth.service";
-import { MediaService, MediaServiceContract } from "./domains/media/media.service";
+import {
+  PagesService,
+  PagesServiceContract,
+} from "./domains/pages/pages.service";
+import {
+  AuthServiceContract,
+  DummyAuthService,
+} from "./shared/auth/auth.service";
+import {
+  MediaService,
+  MediaServiceContract,
+} from "./domains/media/media.service";
 import { PagesController } from "./domains/pages/pages.controller";
 import { MediaController } from "./domains/media/media.controller";
 
@@ -17,7 +26,7 @@ const handle = app.getRequestHandler();
   try {
     await app.prepare();
     const server = express();
-    const router = buildRoutes();    
+    const router = buildRoutes();
     server.use(router);
     server.listen(port, (err?: any) => {
       if (err) throw err;
@@ -35,7 +44,7 @@ function buildRoutes(): Router {
   const authService: AuthServiceContract = new DummyAuthService();
   const pagesService: PagesServiceContract = new PagesService();
   const mediaService: MediaServiceContract = new MediaService();
-  
+
   // Wire up controllers
   new PagesController(authService, pagesService).addRoutes(router);
   new MediaController(authService, mediaService).addRoutes(router);
@@ -47,4 +56,3 @@ function buildRoutes(): Router {
 
   return router;
 }
-

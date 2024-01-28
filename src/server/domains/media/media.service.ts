@@ -2,7 +2,7 @@
 
 import { CmsMedia } from "./dto/CmsMedia.class";
 
-// TODO: These req/resp classes could be moved to a subfolder, 
+// TODO: These req/resp classes could be moved to a subfolder,
 // but for simplicity's sake they're here for now.
 export interface UploadMediaRequest {
   // TODO
