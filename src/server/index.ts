@@ -1,18 +1,33 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, Router } from "express";
 import next from "next";
+import {
+  PagesService,
+  PagesServiceContract,
+} from "./domains/pages/pages.service";
+import {
+  AuthServiceContract,
+  DummyAuthService,
+} from "./shared/auth/auth.service";
+import {
+  MediaService,
+  MediaServiceContract,
+} from "./domains/media/media.service";
+import { PagesController } from "./domains/pages/pages.controller";
+import { MediaController } from "./domains/media/media.controller";
 
+// TODO: Migrate env vars to application.config.ts
 const dev = process.env.NODE_ENV !== "production";
+const port = process.env.PORT || 3000;
+
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const port = process.env.PORT || 3000;
 
 (async () => {
   try {
     await app.prepare();
     const server = express();
-    server.all("*", (req: Request, res: Response) => {
-      return handle(req, res);
-    });
+    const router = buildRoutes();
+    server.use(router);
     server.listen(port, (err?: any) => {
       if (err) throw err;
       console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
@@ -23,3 +38,21 @@ const port = process.env.PORT || 3000;
   }
 })();
 
+function buildRoutes(): Router {
+  const router = Router();
+
+  const authService: AuthServiceContract = new DummyAuthService();
+  const pagesService: PagesServiceContract = new PagesService();
+  const mediaService: MediaServiceContract = new MediaService();
+
+  // Wire up controllers
+  new PagesController(authService, pagesService).addRoutes(router);
+  new MediaController(authService, mediaService).addRoutes(router);
+
+  // Fallback route
+  router.all("*", (req: Request, res: Response) => {
+    return handle(req, res);
+  });
+
+  return router;
+}
