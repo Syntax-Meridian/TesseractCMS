@@ -18,5 +18,10 @@ export interface MediaServiceContract {
 }
 
 export class MediaService implements MediaServiceContract {
-  // TODO
+   async uploadMedia(_req: UploadMediaRequest): Promise<UploadMediaResult> {
+        throw new Error("Method not implemented.");
+    }
+   async getMediaById(_id: string): Promise<CmsMedia | null> {
+        throw new Error("Method not implemented.");
+    }
 }

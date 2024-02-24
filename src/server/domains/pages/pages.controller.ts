@@ -22,23 +22,23 @@ export class PagesController {
     // TODO: other routes
   }
 
-  async getPageByIdRoute(req: Request, res: Response) {
+  async getPageByIdRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async getPageBySlugRoute(req: Request, res: Response) {
+  async getPageBySlugRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async createPageRoute(req: Request, res: Response) {
+  async createPageRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async updatePageRoute(req: Request, res: Response) {
+  async updatePageRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async deletePageRoute(req: Request, res: Response) {
+  async deletePageRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 }

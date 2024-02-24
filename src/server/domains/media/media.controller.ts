@@ -1,10 +1,7 @@
 // Route definitions go in controller classes.
-import { Request, Response, Router } from "express";
-import { MediaService, MediaServiceContract } from "./media.service";
-import {
-  AuthServiceContract,
-  DummyAuthService,
-} from "src/server/shared/auth/auth.service";
+import {Request, Response, Router} from 'express';
+import {MediaServiceContract} from './media.service';
+import {AuthServiceContract} from 'src/server/shared/auth/auth.service';
 
 export class MediaController {
   readonly authService: AuthServiceContract;
@@ -23,7 +20,7 @@ export class MediaController {
     // TODO: other routes
   }
 
-  async uploadMedia(req: Request, res: Response) {
+  async uploadMedia(_req: Request, _res: Response) {
     // TODO: call media service
   }
 }
