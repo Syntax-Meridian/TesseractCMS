@@ -131,3 +131,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Ignore dist folder
+dist/
+
+# Ignore IntelliJ
+.idea
+*.iml
