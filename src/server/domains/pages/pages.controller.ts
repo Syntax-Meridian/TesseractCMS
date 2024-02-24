@@ -1,9 +1,9 @@
 // Route definitions go in controller classes, as well as any
 // transformations of Express Request/Response <-> service Request/Response classes
 
-import { Request, Response, Router } from "express";
-import { PagesServiceContract } from "./pages.service";
-import { AuthServiceContract } from "src/server/shared/auth/auth.service";
+import {Request, Response, Router} from 'express';
+import {PagesServiceContract} from './pages.service';
+import {AuthServiceContract} from 'src/server/shared/auth/auth.service';
 
 export class PagesController {
   readonly authService: AuthServiceContract;
@@ -18,27 +18,30 @@ export class PagesController {
   }
 
   addRoutes(router: Router) {
-    router.post("/pages", this.createPageRoute);
+    router.post("/api/pages", this.createPageRoute);
     // TODO: other routes
   }
 
-  async getPageByIdRoute(req: Request, res: Response) {
+  async getPageByIdRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async getPageBySlugRoute(req: Request, res: Response) {
+  async getPageBySlugRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async createPageRoute(req: Request, res: Response) {
+  async createPageRoute(_req: Request, _res: Response) {
+    // const rawBody = createPageReqValidator(req.body);
+
+    // TODO: call pages service
+    throw new Error("Not implemented yet");
+  }
+
+  async updatePageRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 
-  async updatePageRoute(req: Request, res: Response) {
-    // TODO: call pages service
-  }
-
-  async deletePageRoute(req: Request, res: Response) {
+  async deletePageRoute(_req: Request, _res: Response) {
     // TODO: call pages service
   }
 }
