@@ -16,7 +16,7 @@ export class MediaController {
   }
 
   addRoutes(router: Router) {
-    router.post("/media", this.uploadMedia);
+    router.post("/api/media", this.uploadMedia);
     // TODO: other routes
   }
 
