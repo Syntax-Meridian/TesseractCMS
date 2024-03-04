@@ -51,9 +51,10 @@ export class PagesService implements PagesServiceContract {
         throw new Error('Method not implemented.');
     }
 
-    async createPage(_req: CreateCmsPageRequest): Promise<CreatePageResult> {
+    async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult> {
 
         // call database class
+        console.log(req)
 
         return await {
             id: "3425u43iouo534654"
