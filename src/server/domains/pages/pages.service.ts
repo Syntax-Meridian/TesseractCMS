@@ -5,7 +5,13 @@ import {CmsPage} from './dto/CmsPage.class';
 // TODO: These req/resp classes could be moved to a subfolder,
 // but for simplicity's sake they're here for now.
 export interface CreateCmsPageRequest {
-    // TODO
+    slug: string,
+    layoutType: string,
+    contentData: {
+       leftData: string,
+       rightData: string,
+    },
+    published: boolean
 }
 
 export interface UpdateCmsPageRequest {
@@ -13,7 +19,7 @@ export interface UpdateCmsPageRequest {
 }
 
 export interface CreatePageResult {
-    // TODO
+    id: string
 }
 
 export interface UpdatePageResult {
@@ -46,7 +52,14 @@ export class PagesService implements PagesServiceContract {
     }
 
     async createPage(_req: CreateCmsPageRequest): Promise<CreatePageResult> {
-        throw new Error('Method not implemented.');
+
+        // call database class
+
+        return await {
+            id: "3425u43iouo534654"
+          }
+
+        // throw new Error('Method not implemented.');
     }
 
     async updatePage(_req: UpdateCmsPageRequest): Promise<UpdatePageResult> {

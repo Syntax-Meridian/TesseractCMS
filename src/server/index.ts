@@ -17,6 +17,11 @@ const handle = app.getRequestHandler();
     try {
         await app.prepare();
         const server = express();
+
+        // middleware
+        server.use(express.json())
+        server.use(express.urlencoded({ extended: true }))
+
         const router = buildRoutes();
         server.use(router);
         server.listen(port, (err?: any) => {

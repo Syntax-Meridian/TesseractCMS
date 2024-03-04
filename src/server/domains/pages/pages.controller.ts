@@ -18,7 +18,7 @@ export class PagesController {
   }
 
   addRoutes(router: Router) {
-    router.post("/api/pages", this.createPageRoute);
+    router.post("/api/pages", (req: Request, res: Response) => this.createPageRoute(req, res));
     // TODO: other routes
   }
 
@@ -30,11 +30,17 @@ export class PagesController {
     // TODO: call pages service
   }
 
-  async createPageRoute(_req: Request, _res: Response) {
+  async createPageRoute(req: Request, res: Response) {
     // const rawBody = createPageReqValidator(req.body);
 
     // TODO: call pages service
-    throw new Error("Not implemented yet");
+    const pageResponse = await this.pagesService.createPage(req.body)
+
+    return res.status(201).json({
+      description: "Page created",
+      content: pageResponse
+    })
+    // throw new Error("Not implemented yet");
   }
 
   async updatePageRoute(_req: Request, _res: Response) {
