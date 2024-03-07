@@ -1,5 +1,6 @@
 // Business logic in service files.
 
+import { PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
 import {CmsPage} from './dto/CmsPage.class';
 
 // TODO: These req/resp classes could be moved to a subfolder,
@@ -19,7 +20,7 @@ export interface UpdateCmsPageRequest {
 }
 
 export interface CreatePageResult {
-    id: string
+    id: number
 }
 
 export interface UpdatePageResult {
@@ -43,6 +44,13 @@ export interface PagesServiceContract {
 }
 
 export class PagesService implements PagesServiceContract {
+
+    readonly prismaORM: PagesDBContract
+
+    constructor(prismaDB: any) {
+        this.prismaORM = prismaDB
+    }
+
     async getPageById(_id: string): Promise<CmsPage> {
         throw new Error('Method not implemented.');
     }
@@ -54,13 +62,21 @@ export class PagesService implements PagesServiceContract {
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult> {
 
         // call database class
-        console.log(req)
+        try {
+            const res = await this.prismaORM.savePage({
+                slug: req.slug,
+                layoutType: req.layoutType,
+                contentData: JSON.stringify(req.contentData),
+                published: req.published
+            })
 
-        return await {
-            id: "3425u43iouo534654"
-          }
-
-        // throw new Error('Method not implemented.');
+            return {
+                id: res
+            }
+        } catch (err) {
+            console.log(err)
+            throw new Error('Method not implemented.');
+        }
     }
 
     async updatePage(_req: UpdateCmsPageRequest): Promise<UpdatePageResult> {

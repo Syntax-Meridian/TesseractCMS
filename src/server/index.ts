@@ -5,6 +5,8 @@ import {AuthServiceContract, DummyAuthService,} from './shared/auth/auth.service
 import {MediaService, MediaServiceContract,} from './domains/media/media.service';
 import {PagesController} from './domains/pages/pages.controller';
 import {MediaController} from './domains/media/media.controller';
+import { TesseractPrismaDB } from './domains/pages/tesseract.prismadb';
+import { connectDb } from './shared/prisma';
 
 // TODO: Migrate env vars to application.config.ts
 const dev = process.env.NODE_ENV !== 'production';
@@ -28,6 +30,10 @@ const handle = app.getRequestHandler();
             if (err) throw err;
             console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
         });
+
+        // connect to prisma orm
+        connectDb()
+
     } catch (e) {
         console.error(e);
         process.exit(1);
@@ -37,8 +43,9 @@ const handle = app.getRequestHandler();
 function buildRoutes(): Router {
     const router = Router();
 
+    const tessPrismaDB = new TesseractPrismaDB();
     const authService: AuthServiceContract = new DummyAuthService();
-    const pagesService: PagesServiceContract = new PagesService();
+    const pagesService: PagesServiceContract = new PagesService(tessPrismaDB);
     const mediaService: MediaServiceContract = new MediaService();
 
     // Wire up controllers
