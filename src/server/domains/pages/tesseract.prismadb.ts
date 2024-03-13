@@ -1,25 +1,31 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
-type page = {
+type Page = {
     slug: string,
     layoutType: string,
     contentData: string,
-    published: boolean 
+    published: boolean
 }
 
+type PageId = number
+
 export interface PagesDBContract {
-    savePage(pageData: page): Promise<number>
+    savePage(pageData: Page): Promise<PageId>
 }
 
 export class TesseractPrismaDB implements PagesDBContract
 {
-    async savePage(pageData: page): Promise<number> {
+    prisma: PrismaClient
 
-        console.log('conntected', pageData)
+    constructor() {
+        this.prisma = new PrismaClient()
+    }
 
-        const res = await prisma.page.create({
+    async savePage(pageData: Page): Promise<number> {
+
+        console.log('connected', pageData)
+
+        const res = await this.prisma.page.create({
             data: {
                 slug: pageData.slug,
                 layoutType: pageData.layoutType,

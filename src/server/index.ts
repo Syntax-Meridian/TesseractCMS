@@ -20,7 +20,7 @@ const handle = app.getRequestHandler();
         await app.prepare();
         const server = express();
 
-        // middleware
+        // middleware and it should be before the routes
         server.use(express.json())
         server.use(express.urlencoded({ extended: true }))
 

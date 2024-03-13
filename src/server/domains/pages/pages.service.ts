@@ -47,7 +47,7 @@ export class PagesService implements PagesServiceContract {
 
     readonly prismaORM: PagesDBContract
 
-    constructor(prismaDB: any) {
+    constructor(prismaDB: PagesDBContract) {
         this.prismaORM = prismaDB
     }
 
