@@ -23,9 +23,7 @@ export class TesseractPrismaDB implements PagesDBContract
 
     async savePage(pageData: Page): Promise<number> {
 
-        console.log('connected', pageData)
-
-        const res = await this.prisma.page.create({
+        const res = await this.prisma.pages.create({
             data: {
                 slug: pageData.slug,
                 layoutType: pageData.layoutType,

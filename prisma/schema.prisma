@@ -13,17 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Page {
+model pages {
   id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   slug        String   @db.VarChar(255)
   layoutType  String   @db.VarChar(255)
   contentType String
   published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model User {
+model users {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
