@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { CmsPage } from './dto/CmsPage.class'
 
-type Page = {
+interface Page {
     slug: string,
     layoutType: string,
     contentData: string,
@@ -29,7 +29,7 @@ export class TesseractPrismaDB implements PagesDBContract
             data: {
                 slug: pageData.slug,
                 layoutType: pageData.layoutType,
-                contentType: pageData.contentData,
+                contentData: pageData.contentData,
                 published: pageData.published
             }
         })
@@ -39,6 +39,7 @@ export class TesseractPrismaDB implements PagesDBContract
         return res.id
     }
 
+    // async getPageById(id: PageId): Promise<CmsPage> {
     async getPageById(id: PageId): Promise<CmsPage> {
 
         const res = await this.prisma.pages.findUnique({

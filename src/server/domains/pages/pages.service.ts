@@ -1,18 +1,20 @@
 // Business logic in service files.
 
 import { PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
-import {CmsPage} from './dto/CmsPage.class';
+import { CmsPage } from './dto/CmsPage.class';
 
 // TODO: These req/resp classes could be moved to a subfolder,
 // but for simplicity's sake they're here for now.
 export interface CreateCmsPageRequest {
     slug: string,
     layoutType: string,
-    contentData: {
-       leftData: string,
-       rightData: string,
-    },
+    contentData: ContentData,
     published: boolean
+}
+
+export type ContentData = {
+    leftData: string
+    rightData: string
 }
 
 export interface UpdateCmsPageRequest {
@@ -52,11 +54,18 @@ export class PagesService implements PagesServiceContract {
     }
 
     async getPageById(id: number): Promise<CmsPage> {
-
         try {
-            const res = await this.prismaORM.getPageById(id)
+           const res = await this.prismaORM.getPageById(id)
 
-            return res
+           return {
+                id: res.id,
+                slug: res.slug,
+                layoutType: res.layoutType,
+                contentData: res.contentData,
+                published: res.published,
+                createdAt: res.createdAt,
+                updatedAt: res.updatedAt,
+           }
         } catch (err) {
             if (err instanceof Error) {
                 console.log(err.message);
@@ -75,16 +84,14 @@ export class PagesService implements PagesServiceContract {
 
         // call database class
         try {
-            const res = await this.prismaORM.savePage({
+            const pageId = await this.prismaORM.savePage({
                 slug: req.slug,
                 layoutType: req.layoutType,
                 contentData: JSON.stringify(req.contentData),
                 published: req.published
             })
 
-            return {
-                id: res
-            }
+            return { id: pageId }
         } catch (err) {
             if (err instanceof Error) {
                 console.log(err.message)

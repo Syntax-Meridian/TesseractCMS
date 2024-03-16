@@ -17,7 +17,7 @@ model pages {
   id          Int      @id @default(autoincrement())
   slug        String   @db.VarChar(255)
   layoutType  String   @db.VarChar(255)
-  contentType String
+  contentData String
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

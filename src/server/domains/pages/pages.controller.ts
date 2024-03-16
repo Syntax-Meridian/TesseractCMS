@@ -39,10 +39,7 @@ export class PagesController {
     // TODO: call pages service
     const pageResponse = await this.pagesService.createPage(req.body)
 
-    return res.status(201).json({
-      description: "Page created",
-      content: pageResponse
-    })
+    return res.status(201).json(pageResponse)
     // throw new Error("Not implemented yet");
   }
 

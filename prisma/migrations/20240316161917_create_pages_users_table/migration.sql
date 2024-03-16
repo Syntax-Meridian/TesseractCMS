@@ -3,7 +3,7 @@ CREATE TABLE "pages" (
     "id" SERIAL NOT NULL,
     "slug" VARCHAR(255) NOT NULL,
     "layoutType" VARCHAR(255) NOT NULL,
-    "contentType" TEXT NOT NULL,
+    "contentData" TEXT NOT NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
