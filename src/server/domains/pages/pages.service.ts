@@ -38,7 +38,7 @@ export interface PagesServiceContract {
 
     getPageBySlug(slug: string): Promise<CmsPage>;
 
-    createPage(req: CreateCmsPageRequest): Promise<CreatePageResult>;
+    createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error>;
 
     updatePage(req: UpdateCmsPageRequest): Promise<UpdatePageResult>;
 
@@ -80,21 +80,30 @@ export class PagesService implements PagesServiceContract {
         throw new Error('Method not implemented.')
     }
 
-    async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult> {
+    async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
 
         // call database class
         try {
-            const pageId = await this.prismaORM.savePage({
-                slug: req.slug,
-                layoutType: req.layoutType,
-                contentData: JSON.stringify(req.contentData),
-                published: req.published
-            })
 
-            return { id: pageId }
+            // check if data already exists in db
+            const page = await this.prismaORM.findIfPageExits({ slug: req.slug, layoutType: req.layoutType })
+
+            if (page !== null ) {
+                throw new Error('Page already exist')
+            } else {
+                const pageId = await this.prismaORM.savePage({
+                    slug: req.slug,
+                    layoutType: req.layoutType,
+                    contentData: JSON.stringify(req.contentData),
+                    published: req.published
+                })
+
+                return { id: pageId }
+            }
         } catch (err) {
             if (err instanceof Error) {
                 console.log(err.message)
+                return err
             }
             throw new Error('Method not implemented.');
         }
