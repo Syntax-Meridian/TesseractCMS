@@ -14,5 +14,9 @@ content-type: application/json
 }
 ###
 
+GET http://localhost:3000/api/pages/1
+
+###
+
 GET https://jsonplaceholder.typicode.com/posts
 Content-Type: application/json

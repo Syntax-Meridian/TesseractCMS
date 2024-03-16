@@ -19,12 +19,15 @@ export class PagesController {
 
   addRoutes(router: Router) {
     router.post("/api/pages", (req: Request, res: Response) => this.createPageRoute(req, res));
+    router.get("/api/pages/:id", (req: Request, res: Response) => this.getPageByIdRoute(req, res))
     // TODO: other routes
   }
 
-  async getPageByIdRoute(_req: Request, _res: Response) {
-    // TODO: call pages service
-  }
+ async getPageByIdRoute(req: Request, res: Response) {
+    const pageResponse = await this.pagesService.getPageById(+req.params.id)
+
+    return res.json(pageResponse)
+ }
 
   async getPageBySlugRoute(_req: Request, _res: Response) {
     // TODO: call pages service

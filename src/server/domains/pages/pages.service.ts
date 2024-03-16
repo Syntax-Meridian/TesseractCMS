@@ -32,7 +32,7 @@ export interface DeletePageResult {
 }
 
 export interface PagesServiceContract {
-    getPageById(id: string): Promise<CmsPage>;
+    getPageById(id: number): Promise<CmsPage>;
 
     getPageBySlug(slug: string): Promise<CmsPage>;
 
@@ -51,12 +51,24 @@ export class PagesService implements PagesServiceContract {
         this.prismaORM = prismaDB
     }
 
-    async getPageById(_id: string): Promise<CmsPage> {
-        throw new Error('Method not implemented.');
+    async getPageById(id: number): Promise<CmsPage> {
+
+        try {
+            const res = await this.prismaORM.getPageById(id)
+
+            return res
+        } catch (err) {
+            if (err instanceof Error) {
+                console.log(err.message);
+            }
+
+            throw new Error('Method not implemented.');
+
+        }
     }
 
     async getPageBySlug(_slug: string): Promise<CmsPage> {
-        throw new Error('Method not implemented.');
+        throw new Error('Method not implemented.')
     }
 
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult> {
@@ -74,7 +86,9 @@ export class PagesService implements PagesServiceContract {
                 id: res
             }
         } catch (err) {
-            console.log(err)
+            if (err instanceof Error) {
+                console.log(err.message)
+            }
             throw new Error('Method not implemented.');
         }
     }
