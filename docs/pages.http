@@ -4,8 +4,8 @@ POST http://localhost:3000/api/pages
 content-type: application/json
 
 {
-    "slug": "about-u",
-    "layoutType": "dual_column",
+    "slug": "about-us",
+    "layoutType": "dual_colum",
     "contentData": {
         "leftData": "<div>Left Column</div>",
         "rightData": "<div>Right Column</div>"
