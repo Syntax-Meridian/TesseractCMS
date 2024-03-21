@@ -19,6 +19,7 @@ export class PagesController {
 
   addRoutes(router: Router) {
     router.post("/api/pages", (req: Request, res: Response) => this.createPageRoute(req, res));
+    router.get("/api/pages/:slug", (req: Request, res: Response) => this.getPageBySlugRoute(req, res))
     router.get("/api/pages/:id", (req: Request, res: Response) => this.getPageByIdRoute(req, res))
     // TODO: other routes
   }
@@ -26,11 +27,21 @@ export class PagesController {
  async getPageByIdRoute(req: Request, res: Response) {
     const pageResponse = await this.pagesService.getPageById(+req.params.id)
 
+    if(pageResponse === null) {
+        return res.status(404).json({message: 'Page not found by id'});
+    }
+
     return res.json(pageResponse)
  }
 
-  async getPageBySlugRoute(_req: Request, _res: Response) {
-    // TODO: call pages service
+  async getPageBySlugRoute(req: Request, res: Response) {
+    const pageResponse = await this.pagesService.getPageBySlug(req.params.slug)
+
+    if(pageResponse === null) {
+        return res.status(404).json({message: 'Page not found by slug'});
+    }
+
+    return res.json(pageResponse)
   }
 
   async createPageRoute(req: Request, res: Response) {

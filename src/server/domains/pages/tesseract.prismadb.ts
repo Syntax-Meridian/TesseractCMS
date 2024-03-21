@@ -10,9 +10,12 @@ interface Page {
 
 type PageId = number
 
+type PageSlug = string
+
 export interface PagesDBContract {
     savePage(pageData: Page): Promise<PageId>
     getPageById(id: PageId): Promise<CmsPage>
+    getPageBySlug(slug: PageSlug): Promise<CmsPage | null>
     findIfPageExits(page: { slug: string, layoutType: string }): Promise<PageId | null> // inline type added temp. it will be moved after discussions
 }
 
@@ -40,7 +43,6 @@ export class TesseractPrismaDB implements PagesDBContract
         return res.id
     }
 
-    // async getPageById(id: PageId): Promise<CmsPage> {
     async getPageById(id: PageId): Promise<CmsPage> {
 
         const res = await this.prisma.pages.findUnique({
@@ -50,6 +52,19 @@ export class TesseractPrismaDB implements PagesDBContract
         })
 
         console.log('get page by id', res)
+
+        return res as CmsPage
+    }
+
+    async getPageBySlug(slug: PageSlug): Promise<CmsPage | null> {
+
+        const res = await this.prisma.pages.findFirst({
+            where: {
+                slug
+            }
+        })
+
+        console.log('get page by slug', res)
 
         return res as CmsPage
     }

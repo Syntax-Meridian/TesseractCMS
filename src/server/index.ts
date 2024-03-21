@@ -58,5 +58,11 @@ function buildRoutes(): Router {
       return handle(req, res);
     });
 
+    // router.use((_err: Error, _req: Request, res: Response, _next: unknown) => {
+    //     console.log('hello')
+    //     // console.error(err.stack)
+    //     res.status(500).send('Something broke!')
+    // })
+
     return router;
 }

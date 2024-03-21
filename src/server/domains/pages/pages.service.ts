@@ -37,9 +37,9 @@ export interface DeletePageResult {
 }
 
 export interface PagesServiceContract {
-    getPageById(id: number): Promise<CmsPage>;
+    getPageById(id: number): Promise<CmsPage | null>;
 
-    getPageBySlug(slug: string): Promise<CmsPage>;
+    getPageBySlug(slug: string): Promise<CmsPage | null>;
 
     createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error>;
 
@@ -56,9 +56,13 @@ export class PagesService implements PagesServiceContract {
         this.prismaORM = prismaDB
     }
 
-    async getPageById(id: number): Promise<CmsPage> {
+    async getPageById(id: number): Promise<CmsPage | null> {
         try {
            const res = await this.prismaORM.getPageById(id)
+
+           if (res === null) {
+                return null
+           }
 
            return {
                 id: res.id,
@@ -71,16 +75,37 @@ export class PagesService implements PagesServiceContract {
            }
         } catch (err) {
             if (err instanceof Error) {
-                console.log(err.message);
+                throw Error(err.message)
             }
 
             throw new Error('Method not implemented.');
-
         }
     }
 
-    async getPageBySlug(_slug: string): Promise<CmsPage> {
-        throw new Error('Method not implemented.')
+    async getPageBySlug(slug: string): Promise<CmsPage | null> {
+        try {
+            const res = await this.prismaORM.getPageBySlug(slug)
+
+            if (res === null) {
+                 return null
+            }
+
+            return {
+                 id: res.id,
+                 slug: res.slug,
+                 layoutType: res.layoutType,
+                 contentData: res.contentData,
+                 published: res.published,
+                 createdAt: res.createdAt,
+                 updatedAt: res.updatedAt,
+            }
+         } catch (err) {
+             if (err instanceof Error) {
+                 throw Error(err.message)
+             }
+
+             throw new Error('Method not implemented.');
+         }
     }
 
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
