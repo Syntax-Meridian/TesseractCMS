@@ -37,9 +37,9 @@ export interface DeletePageResult {
 }
 
 export interface PagesServiceContract {
-    getPageById(id: number): Promise<CmsPage | null>;
+    getPageById(id: number): Promise<CmsPage | Error>;
 
-    getPageBySlug(slug: string): Promise<CmsPage | null>;
+    getPageBySlug(slug: string): Promise<CmsPage | Error>;
 
     createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error>;
 
@@ -56,15 +56,32 @@ export class PagesService implements PagesServiceContract {
         this.prismaORM = prismaDB
     }
 
-    async getPageById(id: number): Promise<CmsPage | null> {
-        try {
-           const res = await this.prismaORM.getPageById(id)
+    async getPageById(id: number): Promise<CmsPage | Error> {
+        const res = await this.prismaORM.getPageById(id)
 
-           if (res === null) {
-                return null
-           }
+        if (res === null) {
+            throw new Error(`Page not found by id: ${id}`)
+        }
 
-           return {
+        return {
+            id: res.id,
+            slug: res.slug,
+            layoutType: res.layoutType,
+            contentData: res.contentData,
+            published: res.published,
+            createdAt: res.createdAt,
+            updatedAt: res.updatedAt,
+        }
+    }
+
+    async getPageBySlug(slug: string): Promise<CmsPage | Error> {
+        const res = await this.prismaORM.getPageBySlug(slug)
+
+        if (res === null) {
+            throw new Error(`Page not found by id: ${slug}`)
+        }
+
+        return {
                 id: res.id,
                 slug: res.slug,
                 layoutType: res.layoutType,
@@ -72,93 +89,50 @@ export class PagesService implements PagesServiceContract {
                 published: res.published,
                 createdAt: res.createdAt,
                 updatedAt: res.updatedAt,
-           }
-        } catch (err) {
-            if (err instanceof Error) {
-                throw Error(err.message)
-            }
-
-            throw new Error('Method not implemented.');
         }
     }
 
-    async getPageBySlug(slug: string): Promise<CmsPage | null> {
-        try {
-            const res = await this.prismaORM.getPageBySlug(slug)
-
-            if (res === null) {
-                 return null
-            }
-
-            return {
-                 id: res.id,
-                 slug: res.slug,
-                 layoutType: res.layoutType,
-                 contentData: res.contentData,
-                 published: res.published,
-                 createdAt: res.createdAt,
-                 updatedAt: res.updatedAt,
-            }
-         } catch (err) {
-             if (err instanceof Error) {
-                 throw Error(err.message)
-             }
-
-             throw new Error('Method not implemented.');
-         }
-    }
-
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
-
-        // call database class
-        try {
-            // req validation
-            const schema = {
-                type: "object",
-                properties: {
-                    slug: { type: "string", minLength: 3 },
-                    layoutType: { type: "string", minLength: 3 },
-                    contentData: {
-                        type: "object",
-                        properties: {
-                            leftData: { type: "string" },
-                            rightData: { type: "string" }
-                        }
+        // req validation
+        const schema = {
+            type: "object",
+            properties: {
+                slug: { type: "string", minLength: 3 },
+                layoutType: { type: "string", minLength: 3 },
+                contentData: {
+                    type: "object",
+                    properties: {
+                        leftData: { type: "string" },
+                        rightData: { type: "string" }
                     }
-                },
-                required: ["slug", "layoutType", "contentData"]
-            }
+                }
+            },
+            required: ["slug", "layoutType", "contentData"]
+        }
 
-            const validate = ajv.compile(schema)
-            const valid = validate(req)
+        const validate = ajv.compile(schema)
+        const valid = validate(req)
 
-            console.log(validate.errors?.map(e => e.message)[0])
+        console.log(validate.errors?.map(e => e.message)[0])
 
-            if (!valid) {
-                return new Error("validation errors")
-            }
+        if (!valid) {
+            throw new Error(validate.errors?.map(e => e.message)[0])
+        }
 
-            // check if data already exists in db
-            const page = await this.prismaORM.findIfPageExits({ slug: req.slug, layoutType: req.layoutType })
+        // check if data already exists in db
+        const page = await this.prismaORM.findIfPageExits({ slug: req.slug, layoutType: req.layoutType })
 
-            if (page !== null ) {
-                throw new Error('Page already exist')
-            } else {
-                const pageId = await this.prismaORM.savePage({
-                    slug: req.slug,
-                    layoutType: req.layoutType,
-                    contentData: JSON.stringify(req.contentData),
-                    published: req.published
-                })
+        if (page !== null ) {
+            throw new Error('Page already exist')
+        } else {
+            const pageId = await this.prismaORM.savePage({
+                slug: req.slug,
+                layoutType: req.layoutType,
+                contentData: JSON.stringify(req.contentData),
+                published: req.published
+            })
 
-                return { id: pageId }
-            }
-        } catch (err) {
-            if (err instanceof Error) {
-                console.log(err.message)
-                return err
-            }
-            throw new Error('Method not implemented.');
+            return { id: pageId }
         }
     }
 
