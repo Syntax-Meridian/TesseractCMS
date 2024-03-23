@@ -32,8 +32,8 @@ export interface UpdatePageResult {
     // TODO
 }
 
-export interface DeletePageResult {
-    // TODO
+export interface DeletePageResult extends CreatePageResult {
+
 }
 
 export interface PagesServiceContract {
@@ -45,7 +45,9 @@ export interface PagesServiceContract {
 
     updatePage(req: UpdateCmsPageRequest): Promise<UpdatePageResult>;
 
-    deletePage(id: string): Promise<DeletePageResult>;
+    deletePage(id: number): Promise<DeletePageResult>;
+
+    getAllPages(): Promise<CmsPage[]>
 }
 
 export class PagesService implements PagesServiceContract {
@@ -140,7 +142,13 @@ export class PagesService implements PagesServiceContract {
         throw new Error('Method not implemented.');
     }
 
-    async deletePage(_id: string): Promise<DeletePageResult> {
-        throw new Error('Method not implemented.');
+    async deletePage(id: number): Promise<DeletePageResult> {
+        const deletedPage = await this.prismaORM.deletePageById(id)
+
+        return { id: deletedPage }
+    }
+
+    async getAllPages(): Promise<CmsPage[]> {
+        return await this.prismaORM.getAllPages()
     }
 }

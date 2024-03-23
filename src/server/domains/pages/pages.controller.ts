@@ -19,8 +19,10 @@ export class PagesController {
 
   addRoutes(router: Router) {
     router.post("/api/pages", (req: Request, res: Response) => this.createPageRoute(req, res));
+    router.get("/api/pages", (req: Request, res:Response) => this.getAllPPagesRoute(req, res))
     router.get("/api/pages/:id", (req: Request, res: Response) => this.getPageByIdRoute(req, res))
     router.get("/api/pages/:slug", (req: Request, res: Response) => this.getPageBySlugRoute(req, res))
+    router.delete("/api/pages/:id", (req: Request, res: Response) => this.deletePageRoute(req, res))
     // TODO: other routes
   }
 
@@ -88,7 +90,41 @@ export class PagesController {
     // TODO: call pages service
   }
 
-  async deletePageRoute(_req: Request, _res: Response) {
-    // TODO: call pages service
+  async deletePageRoute(req: Request, res: Response) {
+    try {
+        const deletedPage = await this.pagesService.deletePage(+req.params.id)
+
+        return res.json({
+            success: true,
+            deletedPage
+        })
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(404).json({
+                success: false,
+                message: err.message,
+                stack: err.stack,
+            })
+        }
+    }
+  }
+
+  async getAllPPagesRoute(_req: Request, res: Response) {
+    try {
+        const pages =  await this.pagesService.getAllPages()
+
+        return res.json({
+            success: true,
+            data: pages
+        })
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({
+                success: false,
+                message: err.message,
+                stack: err.stack,
+            })
+        }
+    }
   }
 }

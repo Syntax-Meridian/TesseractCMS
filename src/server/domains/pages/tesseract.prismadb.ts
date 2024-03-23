@@ -17,6 +17,8 @@ export interface PagesDBContract {
     getPageById(id: PageId): Promise<CmsPage>
     getPageBySlug(slug: PageSlug): Promise<CmsPage | null>
     findIfPageExits(page: { slug: string, layoutType: string }): Promise<PageId | null> // inline type added temp. it will be moved after discussions
+    deletePageById(id: PageId): Promise<PageId>
+    getAllPages(): Promise<CmsPage[]>
 }
 
 export class TesseractPrismaDB implements PagesDBContract
@@ -78,5 +80,19 @@ export class TesseractPrismaDB implements PagesDBContract
         })
 
         return res ? res.id : null
+    }
+
+    async deletePageById(id: number): Promise<PageId> {
+        const res = await this.prisma.pages.delete({
+            where: {
+                id
+            }
+        })
+
+        return res.id;
+    }
+
+    async getAllPages(): Promise<CmsPage[]> {
+        return await this.prisma.pages.findMany()
     }
 }
