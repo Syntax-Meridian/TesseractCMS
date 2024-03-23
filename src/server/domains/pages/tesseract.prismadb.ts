@@ -53,8 +53,6 @@ export class TesseractPrismaDB implements PagesDBContract
             }
         })
 
-        console.log('get page by id', res)
-
         return res as CmsPage
     }
 
@@ -65,8 +63,6 @@ export class TesseractPrismaDB implements PagesDBContract
                 slug
             }
         })
-
-        console.log('get page by slug', res)
 
         return res as CmsPage
     }

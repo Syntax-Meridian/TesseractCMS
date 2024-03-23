@@ -23,7 +23,8 @@
     "next": "latest",
     "prettier": "^3.2.4",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "ts-results-es": "^4.1.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",

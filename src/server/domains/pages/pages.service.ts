@@ -3,6 +3,7 @@
 import { PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
 import { CmsPage } from './dto/CmsPage.class';
 import Ajv from 'ajv'
+import { Result, Err, Ok  } from 'ts-results-es';
 const ajv = new Ajv()
 
 
@@ -37,15 +38,15 @@ export interface DeletePageResult extends CreatePageResult {
 }
 
 export interface PagesServiceContract {
-    getPageById(id: number): Promise<CmsPage | Error>;
+    getPageById(id: number): Promise<Result<CmsPage, Error>>;
 
-    getPageBySlug(slug: string): Promise<CmsPage | Error>;
+    getPageBySlug(slug: string): Promise<Result<CmsPage, Error>>;
 
     createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error>;
 
     updatePage(req: UpdateCmsPageRequest): Promise<UpdatePageResult>;
 
-    deletePage(id: number): Promise<DeletePageResult>;
+    deletePage(id: number): Promise<Result<void, Error>>;
 
     getAllPages(): Promise<CmsPage[]>
 }
@@ -58,14 +59,14 @@ export class PagesService implements PagesServiceContract {
         this.prismaORM = prismaDB
     }
 
-    async getPageById(id: number): Promise<CmsPage | Error> {
+    async getPageById(id: number): Promise<Result<CmsPage, Error>> {
         const res = await this.prismaORM.getPageById(id)
 
         if (res === null) {
-            throw new Error(`Page not found by id: ${id}`)
+            return Err(new Error(`Page not found by id: ${id}`))
         }
 
-        return {
+        return Ok({
             id: res.id,
             slug: res.slug,
             layoutType: res.layoutType,
@@ -73,17 +74,17 @@ export class PagesService implements PagesServiceContract {
             published: res.published,
             createdAt: res.createdAt,
             updatedAt: res.updatedAt,
-        }
+        })
     }
 
-    async getPageBySlug(slug: string): Promise<CmsPage | Error> {
+    async getPageBySlug(slug: string): Promise<Result<CmsPage, Error>> {
         const res = await this.prismaORM.getPageBySlug(slug)
 
         if (res === null) {
-            throw new Error(`Page not found by id: ${slug}`)
+            return Err(new Error(`Page not found by slug: ${slug}`))
         }
 
-        return {
+        return Ok({
                 id: res.id,
                 slug: res.slug,
                 layoutType: res.layoutType,
@@ -91,7 +92,7 @@ export class PagesService implements PagesServiceContract {
                 published: res.published,
                 createdAt: res.createdAt,
                 updatedAt: res.updatedAt,
-        }
+        })
     }
 
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
@@ -142,10 +143,10 @@ export class PagesService implements PagesServiceContract {
         throw new Error('Method not implemented.');
     }
 
-    async deletePage(id: number): Promise<DeletePageResult> {
-        const deletedPage = await this.prismaORM.deletePageById(id)
+    async deletePage(id: number): Promise<Result<void, Error>> {
+        await this.prismaORM.deletePageById(id)
 
-        return { id: deletedPage }
+        return Ok.EMPTY
     }
 
     async getAllPages(): Promise<CmsPage[]> {
