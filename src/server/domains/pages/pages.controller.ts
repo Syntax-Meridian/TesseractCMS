@@ -4,6 +4,7 @@
 import {Request, Response, Router} from 'express';
 import {PagesServiceContract} from './pages.service';
 import {AuthServiceContract} from 'src/server/shared/auth/auth.service';
+import { createPageValidate } from '../middleware/validation';
 
 export class PagesController {
   readonly authService: AuthServiceContract;
@@ -18,7 +19,7 @@ export class PagesController {
   }
 
   addRoutes(router: Router) {
-    router.post("/api/pages", (req: Request, res: Response) => this.createPageRoute(req, res));
+    router.post("/api/pages", createPageValidate, (req: Request, res: Response) => this.createPageRoute(req, res));
     router.get("/api/pages", (req: Request, res:Response) => this.getAllPPagesRoute(req, res))
     router.get("/api/pages/:slug", (req: Request, res: Response) => this.getPageBySlugRoute(req, res))
     router.get("/api/pages/:id", (req: Request, res: Response) => this.getPageByIdRoute(req, res))
@@ -70,8 +71,6 @@ export class PagesController {
 
   async createPageRoute(req: Request, res: Response) {
     try {
-        // const rawBody = createPageReqValidator(req.body);
-
         const pageResponse = await this.pagesService.createPage(req.body)
 
         return res.status(201).json({

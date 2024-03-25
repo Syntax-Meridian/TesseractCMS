@@ -1,4 +1,4 @@
-import express, {Router, Request, Response} from 'express';
+import express, {Router, Request, Response, NextFunction} from 'express';
 import next from 'next';
 import {PagesService, PagesServiceContract,} from './domains/pages/pages.service';
 import {AuthServiceContract, DummyAuthService,} from './shared/auth/auth.service';
@@ -6,6 +6,7 @@ import {MediaService, MediaServiceContract,} from './domains/media/media.service
 import {PagesController} from './domains/pages/pages.controller';
 import {MediaController} from './domains/media/media.controller';
 import { TesseractPrismaDB } from './domains/pages/tesseract.prismadb';
+import MyLogger from './domains/middleware/logger';
 
 // TODO: Migrate env vars to application.config.ts
 const dev = process.env.NODE_ENV !== 'production';
@@ -22,6 +23,7 @@ const handle = app.getRequestHandler();
         // middleware and it should be before the routes
         server.use(express.json())
         server.use(express.urlencoded({ extended: true }))
+        server.use(MyLogger)
 
         const router = buildRoutes();
         server.use(router);
@@ -58,11 +60,15 @@ function buildRoutes(): Router {
       return handle(req, res);
     });
 
-    // router.use((_err: Error, _req: Request, res: Response, _next: unknown) => {
-    //     console.log('hello')
-    //     // console.error(err.stack)
-    //     res.status(500).send('Something broke!')
-    // })
+    router.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+        const statusCode = res.statusCode === 200 ? 500 : res.statusCode
+        const message = err.message
+
+        res.status(statusCode).json({
+            message,
+            stack: process.env.NODE_ENV === 'development' ? "🥞" : err.stack
+        })
+    })
 
     return router;
 }

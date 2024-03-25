@@ -2,10 +2,7 @@
 
 import { PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
 import { CmsPage } from './dto/CmsPage.class';
-import Ajv from 'ajv'
 import { Result, Err, Ok  } from 'ts-results-es';
-const ajv = new Ajv()
-
 
 // TODO: These req/resp classes could be moved to a subfolder,
 // but for simplicity's sake they're here for now.
@@ -96,31 +93,7 @@ export class PagesService implements PagesServiceContract {
     }
 
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
-        // req validation
-        const schema = {
-            type: "object",
-            properties: {
-                slug: { type: "string", minLength: 3 },
-                layoutType: { type: "string", minLength: 3 },
-                contentData: {
-                    type: "object",
-                    properties: {
-                        leftData: { type: "string" },
-                        rightData: { type: "string" }
-                    }
-                }
-            },
-            required: ["slug", "layoutType", "contentData"]
-        }
-
-        const validate = ajv.compile(schema)
-        const valid = validate(req)
-
-        console.log(validate.errors?.map(e => e.message)[0])
-
-        if (!valid) {
-            throw new Error(validate.errors?.map(e => e.message)[0])
-        }
+console.log('createPage: 96');
 
         // check if data already exists in db
         const page = await this.prismaORM.findIfPageExits({ slug: req.slug, layoutType: req.layoutType })
