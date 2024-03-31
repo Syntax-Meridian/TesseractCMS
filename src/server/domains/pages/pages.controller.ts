@@ -23,6 +23,7 @@ export class PagesController {
     router.get("/api/pages", (req: Request, res:Response) => this.getAllPPagesRoute(req, res))
     router.get("/api/pages/:slug", (req: Request, res: Response) => this.getPageBySlugRoute(req, res))
     router.get("/api/pages/:id", (req: Request, res: Response) => this.getPageByIdRoute(req, res))
+    router.patch("/api/pages/:id", (req: Request, res: Response) => this.updatePageRoute(req, res))
     router.delete("/api/pages/:id", (req: Request, res: Response) => this.deletePageRoute(req, res))
     // TODO: other routes
   }
@@ -89,8 +90,24 @@ export class PagesController {
     }
   }
 
-  async updatePageRoute(_req: Request, _res: Response) {
-    // TODO: call pages service
+  async updatePageRoute(req: Request, res: Response) {
+    const result = await this.pagesService.updatePage(+req.params.id, req.body)
+
+    if (result.isOk()) {
+        res.json({
+            success: true,
+            // data: {
+            //     slug: result.value.slug,
+            //     layoutType: result.value.layoutType,
+            //     contentData: result.value.contentData
+            // }
+        })
+    } else{
+        res.status(404).json({
+            success: true,
+            message: result.error.message
+        })
+    }
   }
 
   async deletePageRoute(req: Request, res: Response) {

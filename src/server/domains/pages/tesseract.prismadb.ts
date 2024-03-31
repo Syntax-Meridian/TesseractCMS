@@ -8,15 +8,22 @@ interface Page {
     published: boolean
 }
 
-type PageId = number
+interface updatePage {
+    slug: string,
+    layoutType: string,
+    contentData: string,
+}
 
-type PageSlug = string
+export type PageId = number
+
+export type PageSlug = string
 
 export interface PagesDBContract {
     savePage(pageData: Page): Promise<PageId>
     getPageById(id: PageId): Promise<CmsPage>
     getPageBySlug(slug: PageSlug): Promise<CmsPage | null>
     findIfPageExits(page: { slug: string, layoutType: string }): Promise<PageId | null> // inline type added temp. it will be moved after discussions
+    updatePage(id: PageId, pageData: updatePage): Promise<true>
     deletePageById(id: PageId): Promise<PageId>
     getAllPages(): Promise<CmsPage[]>
 }
@@ -90,5 +97,23 @@ export class TesseractPrismaDB implements PagesDBContract
 
     async getAllPages(): Promise<CmsPage[]> {
         return await this.prisma.pages.findMany()
+    }
+
+    async updatePage(id: PageId, pageData: updatePage): Promise<true> {
+
+        const res = await this.prisma.pages.update({
+            where: {
+                id
+            },
+            data: {
+                slug: pageData.slug,
+                layoutType: pageData.layoutType,
+                contentData: pageData.contentData,
+            }
+        })
+
+        console.log('response on updation', res)
+
+        return true
     }
 }

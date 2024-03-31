@@ -1,6 +1,6 @@
 // Business logic in service files.
 
-import { PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
+import { PageId, PagesDBContract } from 'src/server/domains/pages/tesseract.prismadb';
 import { CmsPage } from './dto/CmsPage.class';
 import { Result, Err, Ok  } from 'ts-results-es';
 
@@ -18,32 +18,39 @@ export type ContentData = {
     rightData: string
 }
 
+// can extend createCmsPageRequest. But verify with @Justin
 export interface UpdateCmsPageRequest {
-    // TODO
+    slug: string,
+    layoutType: string,
+    contentData: ContentData,
 }
 
 export interface CreatePageResult {
     id: number
 }
 
+// I know some mismatches in the response.
+// since i coudn't discuss, i am trying to finish the functionalities part
 export interface UpdatePageResult {
     // TODO
 }
 
+// I know some mismatches in the response.
+// since i coudn't discuss, i am trying to finish the functionalities part
 export interface DeletePageResult extends CreatePageResult {
 
 }
 
 export interface PagesServiceContract {
-    getPageById(id: number): Promise<Result<CmsPage, Error>>;
+    getPageById(id: PageId): Promise<Result<CmsPage, Error>>;
 
     getPageBySlug(slug: string): Promise<Result<CmsPage, Error>>;
 
     createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error>;
 
-    updatePage(req: UpdateCmsPageRequest): Promise<UpdatePageResult>;
+    updatePage(id: PageId, req: UpdateCmsPageRequest): Promise<Result<true, Error>>;
 
-    deletePage(id: number): Promise<Result<void, Error>>;
+    deletePage(id: PageId): Promise<Result<void, Error>>;
 
     getAllPages(): Promise<CmsPage[]>
 }
@@ -56,7 +63,7 @@ export class PagesService implements PagesServiceContract {
         this.prismaORM = prismaDB
     }
 
-    async getPageById(id: number): Promise<Result<CmsPage, Error>> {
+    async getPageById(id: PageId): Promise<Result<CmsPage, Error>> {
         const res = await this.prismaORM.getPageById(id)
 
         if (res === null) {
@@ -93,8 +100,6 @@ export class PagesService implements PagesServiceContract {
     }
 
     async createPage(req: CreateCmsPageRequest): Promise<CreatePageResult | Error> {
-console.log('createPage: 96');
-
         // check if data already exists in db
         const page = await this.prismaORM.findIfPageExits({ slug: req.slug, layoutType: req.layoutType })
 
@@ -112,11 +117,23 @@ console.log('createPage: 96');
         }
     }
 
-    async updatePage(_req: UpdateCmsPageRequest): Promise<UpdatePageResult> {
-        throw new Error('Method not implemented.');
+    async updatePage(id: PageId, req: UpdateCmsPageRequest): Promise<Result<true, Error>> {
+        const res = await this.prismaORM.getPageById(id)
+
+        if (res === null) {
+            return Err(new Error(`Page not found by id: ${id}`))
+        }
+
+        await this.prismaORM.updatePage(id, {
+            slug: req.slug,
+            layoutType: req.layoutType,
+            contentData: JSON.stringify(req.contentData),
+        })
+
+        return Ok(true)
     }
 
-    async deletePage(id: number): Promise<Result<void, Error>> {
+    async deletePage(id: PageId): Promise<Result<void, Error>> {
         await this.prismaORM.deletePageById(id)
 
         return Ok.EMPTY
