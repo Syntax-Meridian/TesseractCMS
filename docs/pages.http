@@ -1,0 +1,22 @@
+
+### Create page
+POST http://localhost:3000/api/pages
+content-type: application/json
+
+{
+    "slug": "about-us",
+    "layoutType": "dual_colum",
+    "contentData": {
+        "leftData": "<div>Left Column</div>",
+        "rightData": "<div>Right Column</div>"
+    },
+    "published": true
+}
+###
+
+GET http://localhost:3000/api/pages/2
+
+###
+
+GET https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
