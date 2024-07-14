@@ -1,69 +1,132 @@
-@startuml Create New Page v0.1 Basic
-title Create New Page v0.1 Basic
+@startuml User Stories - Content Manager - Create Page
+title Creating a Page via API Call
 
-actor Admin as User
-entity Frontend
-entity API
-database "Content Database" as CDB
+actor "Content Manager" as CM
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Authentication Layer" as Auth
+participant "Validation Layer" as VL
+participant "Service Layer" as SL
+participant "Prisma ORM\nDatabase Layer" as DB
 
-User -> Frontend++: Create new page
-Frontend -> API++: POST /v1/pages
-API -> CDB++: Create entry
-API <-- CDB--: Entry created
-Frontend <-- API--: ""201 Created""\n""{ pageId: ... }""
-User <-- Frontend: Render success result
-
+CM -> FC : Request to create page\n(JSON data with slug, layoutType, etc.)
+FC -> AC : POST /api/pages
+AC -> Auth : Verify authentication
+Auth --> AC : Authentication result
+AC -> VL : Validate request data
+VL -> SL : Forward valid data
+SL -> DB : insert(Page)
+DB --> SL : Page{id, slug}
+SL --> AC : 201 Created (id, slug)
+AC --> FC : Response 201 (id, slug)
+FC --> CM : Display success & page details
 @enduml
 
-@startuml Request Specific Page v0.1 Basic
-title Request Specific Page v0.1 Basic
+@startuml User Stories - Content Manager - Upload Media
+title Uploading Media
+actor "Content Manager" as CM
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Authentication Layer" as Auth
+participant "Validation Layer" as VL
+participant "Service Layer" as SL
+participant "Image Store" as ST
+participant "Prisma ORM\nDatabase Layer" as DB
 
-actor User
-entity Frontend
-entity API
-database "Content Database" as CDB
-
-User -> Frontend++: Request specific page\n(identified by ""id"" )
-  Frontend -> API++: ""GET /v1/pages/{id}""
-    API -> CDB++: Fetch entry by ID
-    API <-- CDB--: Return entry data
-  Frontend <-- API--: ""200 OK""\n//with page data//
-User <-- Frontend: Render page
-
+CM -> FC : Upload media file with optional metadata\n(altText, title, etc.)
+FC -> AC : POST /api/media
+AC -> Auth : Verify authentication
+Auth --> AC : Authentication result
+AC -> VL : Validate media and metadata
+VL -> SL : Forward valid media
+SL -> ST : Store image
+ST --> SL : (imagePath)
+SL -> DB : insert(Media with metadata)
+DB --> SL : Media{id}
+SL --> AC : 201 Created (mediaId)
+AC --> FC : Response 201 (mediaId)
+FC --> CM : Display media upload success
 @enduml
 
+@startuml User Stories - Content Manager - Retrieve Page by ID
+title Retrieving a Page by ID
+actor "Content Manager" as CM
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Authentication Layer" as Auth
+participant "Service Layer" as SL
+participant "Prisma ORM\nDatabase Layer" as DB
 
-@startuml Update Specific Page v0.1 Basic
-title Update Specific Page v0.1 Basic
-
-actor Admin as User
-entity Frontend
-entity API
-database "Content Database" as CDB
-
-User -> Frontend++: Update specific page\n(identified by ""id"" )
-  Frontend -> API++: ""PUT /v1/pages/{id}""
-    API -> CDB++: Update entry by ID
-    API <-- CDB--: Return entry data
-  Frontend <-- API--: ""200 OK""\n//with updated timestamp & id//
-User <-- Frontend: Show updated page
-
+CM -> FC : Request page details by ID
+FC -> AC : GET /api/pages/{id}
+AC -> Auth : Verify authentication
+Auth --> AC : Authentication result
+AC -> SL : getPageById(pageId)
+SL -> DB : select(Page) where id = pageId
+DB --> SL : Page details
+SL --> AC : 200 OK (Page details)
+AC --> FC : Response 200 (Page details)
+FC --> CM : Display page details
 @enduml
 
+@startuml User Stories - Content Manager - Delete Page by ID
+title Deleting a Page by ID
+actor "Content Manager" as CM
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Authentication Layer" as Auth
+participant "Service Layer" as SL
+participant "Prisma ORM\nDatabase Layer" as DB
 
-@startuml Delete Specific Page v0.1 Basic
-title Delete Specific Page v0.1 Basic
+CM -> FC : Request to delete page by ID
+FC -> AC : DELETE /api/pages/{id}
+AC -> Auth : Verify authentication
+Auth --> AC : Authentication result
+AC -> SL : deletePageById(pageId)
+SL -> DB : delete(Page) where id = pageId
+DB --> SL : Confirmation
+SL --> AC : 204 No Content
+AC --> FC : Response 204 (Delete Confirmation)
+FC --> CM : Display deletion success
+@enduml
 
-actor Admin as User
-entity Frontend
-entity API
-database "Content Database" as CDB
+@startuml User Stories - Content Manager - Update Page by ID
+title Updating a Page by ID
+actor "Content Manager" as CM
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Authentication Layer" as Auth
+participant "Validation Layer" as VL
+participant "Service Layer" as SL
+participant "Prisma ORM\nDatabase Layer" as DB
 
-User -> Frontend++: Delete specific page\n(identified by ""id"" )
-  Frontend -> API++: ""GET /v1/pages/{id}""
-    API -> CDB++: Fetch entry by ID
-    API <-- CDB--: Return entry data
-  Frontend <-- API--: ""200 OK""\n//with deletion timestamp//
-User <-- Frontend: Show deletion success page
+CM -> FC : Request to update page by ID with data
+FC -> AC : PATCH /api/pages/{id}
+AC -> Auth : Verify authentication
+Auth --> AC : Authentication result
+AC -> VL : Validate update data
+VL -> SL : Forward valid data
+SL -> DB : update(Page) where id = pageId
+DB --> SL : Updated Page details
+SL --> AC : 200 OK (Updated Page details)
+AC --> FC : Response 200 (Updated Page details)
+FC --> CM : Display update success & details
+@enduml
 
+@startuml User Stories - User - Retrieve Page by Slug
+' Title: Retrieving a Page by Slug
+actor "User" as U
+participant "Frontend Client" as FC
+participant "API Controller" as AC
+participant "Service Layer" as SL
+participant "Prisma ORM\nDatabase Layer" as DB
+
+U -> FC : Request page details by slug
+FC -> AC : GET /{slug}
+AC -> SL : getPageBySlug(slug)
+SL -> DB : select(Page) where slug = slug
+DB --> SL : Page details
+SL --> AC : 200 OK (Page details)
+AC --> FC : Response 200 (Page details)
+FC --> U : Display page details
 @enduml
