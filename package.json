@@ -37,7 +37,7 @@
     "chai": "^4.3.10",
     "eslint": "^8.50.0",
     "eslint-config-next": "latest",
-    "mocha": "^10.2.0",
+    "mocha": "^10.8.2",
     "nodemon": "^3.0.1",
     "postcss": "latest",
     "tailwindcss": "latest",
